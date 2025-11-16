@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptPilot Pro - AI-Powered Prompt Optimization Platform</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Transform vague prompts into crystal-clear, actionable AI instructions. PromptPilot Pro uses advanced AI to optimize your prompts for better results with Claude, GPT, and other AI models.">
+    <meta name="keywords" content="AI prompt optimization, prompt engineering, Claude prompts, GPT prompts, AI tools, prompt enhancer">
+    <meta name="author" content="PromptPilot Pro">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://promptpilot.pro/">
+    <meta property="og:title" content="PromptPilot Pro - AI-Powered Prompt Optimization">
+    <meta property="og:description" content="Transform vague prompts into crystal-clear, actionable AI instructions with advanced AI-powered optimization.">
+    <meta property="og:image" content="https://promptpilot.pro/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://promptpilot.pro/">
+    <meta property="twitter:title" content="PromptPilot Pro - AI-Powered Prompt Optimization">
+    <meta property="twitter:description" content="Transform vague prompts into crystal-clear, actionable AI instructions.">
+    <meta property="twitter:image" content="https://promptpilot.pro/twitter-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark .glass-effect {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .scroll-smooth {
+            scroll-behavior: smooth;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 640px) {
+            .hero-title {
+                font-size: 2.5rem !important;
+                line-height: 1.2;
+            }
+            
+            .mobile-hidden {
+                display: none;
+            }
+            
+            .mobile-full {
+                width: 100% !important;
+            }
+        }
+        
+        /* Reduced Motion for Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        
+        /* Rate Limit Banner Animation */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .rate-limit-banner {
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        /* Loading States */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .loading-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        /* Skeleton Loading */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .skeleton {
+            animation: shimmer 2s infinite;
+            background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
+            background-size: 1000px 100%;
+        }
+        
+        .dark .skeleton {
+            background: linear-gradient(to right, #2d2d2d 4%, #3d3d3d 25%, #2d2d2d 36%);
+            background-size: 1000px 100%;
+        }
+        
+        /* Fade In Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Focus Visible for Accessibility */
+        *:focus-visible {
+            outline: 2px solid #8b5cf6;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="scroll-smooth">
+    <div id="app" role="main"></div>
+    
+    <!-- Screen Reader Announcements -->
+    <div id="sr-announcer" role="status" aria-live="polite" aria-atomic="true" class="sr-only absolute left-[-10000px] w-1 h-1 overflow-hidden"></div>
+    
+    <script type="module">
+        // ==================== UTILITY FUNCTIONS ====================
+        
+        /**
+         * Sanitize user input to prevent XSS attacks
+         * @param {string} input - Raw user input
+         * @returns {string} Sanitized HTML-safe string
+         */
+        function sanitizeHTML(input) {
+            const temp = document.createElement('div');
+            temp.textContent = input;
+            return temp.innerHTML;
+        }
+        
+        /**
+         * Announce message to screen readers
+         * @param {string} message - Message to announce
+         */
+        function announceToScreenReader(message) {
+            const announcer = document.getElementById('sr-announcer');
+            if (announcer) {
+                announcer.textContent = message;
+                setTimeout(() => announcer.textContent = '', 1000);
+            }
+        }
+        
+        /**
+         * Focus element with delay
+         * @param {string} selector - CSS selector
+         */
+        function focusElement(selector) {
+            setTimeout(() => {
+                const element = document.querySelector(selector);
+                if (element) element.focus();
+            }, 100);
+        }
+        
+        /**
+         * Format relative time
+         * @param {string} timestamp - ISO timestamp
+         * @returns {string} Relative time string
+         */
+        function formatRelativeTime(timestamp) {
+            const now = new Date();
+            const past = new Date(timestamp);
+            const diffMs = now - past;
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMs / 3600000);
+            const diffDays = Math.floor(diffMs / 86400000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffHours < 24) return `${diffHours}h ago`;
+            if (diffDays < 7) return `${diffDays}d ago`;
+            return past.toLocaleDateString();
+        }
+        
+        // ==================== STATE MANAGEMENT ====================
+        const AppState = {
+            currentView: 'landing',
+            theme: localStorage.getItem('theme') || 'dark',
+            user: null,
+            settings: { theme: 'dark', autoSave: true },
+            input: '',
+            result: null,
+            loading: false,
+            error: null,
+            copied: false,
+            history: [],
+            stats: { total: 0, avgScore: 0 },
+            rateLimitBanner: null,
+            showExportMenu: false,
+            isOffline: !navigator.onLine,
+            
+            setState(updates) {
+                Object.assign(this, updates);
+                render();
+            }
+        };
+
+        // ==================== NETWORK DETECTION ====================
+        window.addEventListener('online', () => {
+            AppState.setState({ isOffline: false });
+            announceToScreenReader('Connection restored');
+        });
+        
+        window.addEventListener('offline', () => {
+            AppState.setState({ isOffline: true });
+            announceToScreenReader('Connection lost. Working offline.');
+        });
+
+        // ==================== MULTI-TAB SYNC ====================
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'promptpilot_settings') {
+                const newSettings = JSON.parse(e.newValue || '{}');
+                AppState.setState({ settings: newSettings, theme: newSettings.theme });
+                Handlers.applyTheme();
+            } else if (e.key && e.key.startsWith('promptpilot_prompts_')) {
+                Handlers.loadHistory();
+            }
+        });
+
+        // ==================== RATE LIMITING MANAGER ====================
+        const RateLimitManager = {
+            checkRateLimit(errorMessage) {
+                if (errorMessage.includes('429') || errorMessage.toLowerCase().includes('rate limit')) {
+                    const retryAfter = 60;
+                    AppState.setState({
+                        rateLimitBanner: {
+                            message: 'Rate limit reached. Please try again in a moment.',
+                            retryAfter: Date.now() + (retryAfter * 1000),
+                            countdown: retryAfter
+                        }
+                    });
+                    
+                    announceToScreenReader('Rate limit reached. Please wait before trying again.');
+                    
+                    // Countdown timer
+                    const interval = setInterval(() => {
+                        if (AppState.rateLimitBanner) {
+                            const remaining = Math.ceil((AppState.rateLimitBanner.retryAfter - Date.now()) / 1000);
+                            if (remaining <= 0) {
+                                clearInterval(interval);
+                                this.dismissBanner();
+                            } else {
+                                AppState.rateLimitBanner.countdown = remaining;
+                                render();
+                            }
+                        } else {
+                            clearInterval(interval);
+                        }
+                    }, 1000);
+                    
+                    return true;
+                }
+                return false;
+            },
+
+            dismissBanner() {
+                AppState.setState({ rateLimitBanner: null });
+                announceToScreenReader('Rate limit banner dismissed');
+            }
+        };
+
+        // ==================== STORAGE MANAGER ====================
+        const StorageManager = {
+            savePrompt(userId, prompt) {
+                const key = `promptpilot_prompts_${userId}`;
+                try {
+                    const existing = localStorage.getItem(key);
+                    const prompts = existing ? JSON.parse(existing) : [];
+                    const newPrompt = {
+                        id: Date.now(),
+                        original: prompt.original,
+                        optimized: prompt.optimized,
+                        score: prompt.score,
+                        timestamp: new Date().toISOString()
+                    };
+                    prompts.unshift(newPrompt);
+                    localStorage.setItem(key, JSON.stringify(prompts.slice(0, 50)));
+                    return newPrompt;
+                } catch (e) {
+                    console.error('Storage error:', e);
+                    return null;
+                }
+            },
+
+            getPrompts(userId) {
+                const key = `promptpilot_prompts_${userId}`;
+                try {
+                    const result = localStorage.getItem(key);
+                    return result ? JSON.parse(result) : [];
+                } catch (e) {
+                    return [];
+                }
+            },
+
+            deletePrompt(userId, promptId) {
+                const key = `promptpilot_prompts_${userId}`;
+                try {
+                    const result = localStorage.getItem(key);
+                    if (result) {
+                        const prompts = JSON.parse(result);
+                        const filtered = prompts.filter(p => p.id !== promptId);
+                        localStorage.setItem(key, JSON.stringify(filtered));
+                        return true;
+                    }
+                } catch (e) {
+                    return false;
+                }
+            },
+
+            saveSettings(settings) {
+                try {
+                    localStorage.setItem('promptpilot_settings', JSON.stringify(settings));
+                } catch (e) {
+                    console.error('Settings save error:', e);
+                }
+            },
+
+            getSettings() {
+                try {
+                    const result = localStorage.getItem('promptpilot_settings');
+                    return result ? JSON.parse(result) : { theme: 'dark', autoSave: true };
+                } catch (e) {
+                    return { theme: 'dark', autoSave: true };
+                }
+            }
+        };
+
+        // ==================== USER ID MANAGEMENT ====================
+        function getOrCreateUserId() {
+            let userId = localStorage.getItem('promptpilot_user_id');
+            if (!userId) {
+                userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                localStorage.setItem('promptpilot_user_id', userId);
+            }
+            return userId;
+        }
+
+        // ==================== BACKEND API INTEGRATION ====================
+        const BACKEND_URL = 'https://promptpilot.up.railway.app';
+        const REQUEST_TIMEOUT = 30000; // 30 seconds
+        
+        /**
+         * Optimize prompt using backend API with timeout and retry logic
+         * @param {string} userInput - User's input prompt
+         * @returns {Promise<Object>} Optimized prompt data
+         */
+        async function runRealBackendOptimization(userInput) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/optimize`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ input: userInput }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || `Backend Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                return {
+                    optimized: data.optimized,
+                    score: data.score || 8,
+                    details: {
+                        clarity: data.details?.clarity || 8,
+                        specificity: data.details?.specificity || 8,
+                        structure: data.details?.structure || 8,
+                        domain: data.details?.domain || 'General',
+                        improvements: data.details?.improvements || []
+                    }
+                };
+            } catch (error) {
+                clearTimeout(timeoutId);
+                
+                if (error.name === 'AbortError') {
+                    throw new Error('Request timed out. Please check your connection and try again.');
+                }
+                
+                if (!navigator.onLine) {
+                    throw new Error('No internet connection. Please check your network and try again.');
+                }
+                
+                console.error('Backend optimization error:', error);
+                throw new Error(`Failed to optimize: ${error.message}`);
+            }
+        }
+
+        // ==================== EVENT HANDLERS ====================
+        const Handlers = {
+            async initialize() {
+                const savedSettings = StorageManager.getSettings();
+                const userId = getOrCreateUserId();
+                
+                AppState.setState({
+                    settings: savedSettings,
+                    theme: savedSettings.theme,
+                    user: { id: userId, name: 'Guest User' }
+                });
+                
+                this.loadHistory();
+                this.applyTheme();
+                this.setupKeyboardShortcuts();
+            },
+
+            setupKeyboardShortcuts() {
+                document.addEventListener('keydown', (e) => {
+                    // Ctrl/Cmd + Enter to optimize
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && AppState.currentView === 'optimize') {
+                        e.preventDefault();
+                        if (AppState.input.trim() && !AppState.loading) {
+                            this.optimizePrompt();
+                        }
+                    }
+                    
+                    // Ctrl/Cmd + K to focus input
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        focusElement('#promptInput');
+                    }
+                    
+                    // Escape to close export menu
+                    if (e.key === 'Escape' && AppState.showExportMenu) {
+                        AppState.setState({ showExportMenu: false });
+                    }
+                });
+            },
+
+            loadHistory() {
+                if (AppState.user) {
+                    const prompts = StorageManager.getPrompts(AppState.user.id);
+                    const total = prompts.length;
+                    const avgScore = total > 0 
+                        ? Math.round(prompts.reduce((sum, p) => sum + (p.score || 0), 0) / total)
+                        : 0;
+                    
+                    AppState.setState({
+                        history: prompts,
+                        stats: { total, avgScore }
+                    });
+                }
+            },
+
+            async optimizePrompt() {
+                if (!AppState.input.trim()) {
+                    AppState.setState({ error: 'Please enter a prompt to optimize' });
+                    announceToScreenReader('Error: Please enter a prompt to optimize');
+                    return;
+                }
+                
+                if (AppState.isOffline) {
+                    AppState.setState({ error: 'No internet connection. Please check your network.' });
+                    announceToScreenReader('Error: No internet connection');
+                    return;
+                }
+
+                AppState.setState({ loading: true, error: null, result: null });
+                announceToScreenReader('Optimizing prompt...');
+
+                try {
+                    const optimized = await runRealBackendOptimization(AppState.input);
+                    AppState.setState({ result: optimized, loading: false });
+                    announceToScreenReader(`Optimization complete. Score: ${optimized.score} out of 10`);
+                    
+                    if (AppState.settings.autoSave && AppState.user) {
+                        StorageManager.savePrompt(AppState.user.id, {
+                            original: AppState.input,
+                            optimized: optimized.optimized,
+                            score: optimized.score
+                        });
+                        this.loadHistory();
+                    }
+                    
+                    // Focus the result
+                    focusElement('#optimizedResult');
+                } catch (err) {
+                    const isRateLimit = RateLimitManager.checkRateLimit(err.message);
+                    if (!isRateLimit) {
+                        AppState.setState({ error: err.message, loading: false });
+                        announceToScreenReader(`Error: ${err.message}`);
+                    } else {
+                        AppState.setState({ loading: false });
+                    }
+                }
+            },
+
+            async copyToClipboard() {
+                if (AppState.result) {
+                    try {
+                        await navigator.clipboard.writeText(AppState.result.optimized);
+                        AppState.setState({ copied: true });
+                        announceToScreenReader('Copied to clipboard');
+                        setTimeout(() => AppState.setState({ copied: false }), 2000);
+                    } catch (err) {
+                        console.error('Copy failed:', err);
+                        announceToScreenReader('Failed to copy to clipboard');
+                    }
+                }
+            },
+
+            exportAsJSON() {
+                const data = {
+                    original: AppState.input,
+                    optimized: AppState.result.optimized,
+                    score: AppState.result.score,
+                    details: AppState.result.details,
+                    timestamp: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `prompt-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                announceToScreenReader('Exported as JSON');
+            },
+
+            exportAsMarkdown() {
+                const d = AppState.result.details;
+                const markdown = `# Optimized Prompt - ${new Date().toLocaleDateString()}
+
+## Original Prompt
+\`\`\`
+${AppState.input}
+\`\`\`
+
+## Optimized Prompt
+\`\`\`
+${AppState.result.optimized}
+\`\`\`
+
+## Quality Metrics
+- **Overall Score**: ${AppState.result.score}/10
+- **Clarity**: ${d.clarity}/10
+- **Specificity**: ${d.specificity}/10
+- **Structure**: ${d.structure}/10
+
+## Analysis
+- **Domain**: ${d.domain || 'General'}
+
+## Key Improvements
+${d.improvements && d.improvements.length > 0 ? d.improvements.map(imp => `- ${imp}`).join('\n') : '- Enhanced clarity and structure'}
+
+---
+*Generated by PromptPilot Pro*
+`;
+                const blob = new Blob([markdown], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `prompt-${Date.now()}.md`;
+                a.click();
+                URL.revokeObjectURL(url);
+                announceToScreenReader('Exported as Markdown');
+            },
+
+            exportAsText() {
+                const d = AppState.result.details;
+                const text = `OPTIMIZED PROMPT - ${new Date().toLocaleString()}
+${'='.repeat(60)}
+
+ORIGINAL PROMPT:
+${AppState.input}
+
+OPTIMIZED PROMPT:
+${AppState.result.optimized}
+
+${'='.repeat(60)}
+QUALITY METRICS:
+  Overall Score: ${AppState.result.score}/10
+  Clarity: ${d.clarity}/10
+  Specificity: ${d.specificity}/10
+  Structure: ${d.structure}/10
+
+ANALYSIS:
+  Domain: ${d.domain || 'General'}
+
+KEY IMPROVEMENTS:
+${d.improvements && d.improvements.length > 0 ? d.improvements.map((imp, i) => `  ${i + 1}. ${imp}`).join('\n') : '  - Enhanced clarity and structure'}
+
+${'='.repeat(60)}
+Generated by PromptPilot Pro
+`;
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `prompt-${Date.now()}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+                announceToScreenReader('Exported as text file');
+            },
+
+            toggleExportMenu() {
+                AppState.setState({ showExportMenu: !AppState.showExportMenu });
+            },
+
+            deleteHistoryItem(promptId) {
+                if (AppState.user) {
+                    StorageManager.deletePrompt(AppState.user.id, promptId);
+                    this.loadHistory();
+                    announceToScreenReader('Prompt deleted from history');
+                }
+            },
+
+            toggleTheme() {
+                const newTheme = AppState.theme === 'dark' ? 'light' : 'dark';
+                const newSettings = { ...AppState.settings, theme: newTheme };
+                AppState.setState({ theme: newTheme, settings: newSettings });
+                StorageManager.saveSettings(newSettings);
+                this.applyTheme();
+                announceToScreenReader(`Switched to ${newTheme} theme`);
+            },
+
+            applyTheme() {
+                if (AppState.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            },
+
+            navigateTo(view) {
+                const targetView = view === 'app' ? 'optimize' : view;
+                AppState.setState({ currentView: targetView });
+                announceToScreenReader(`Navigated to ${targetView} page`);
+                setTimeout(() => {
+                    lucide.createIcons();
+                    if (targetView === 'optimize') {
+                        focusElement('#promptInput');
+                    }
+                }, 0);
+            },
+            
+            handleMenuKeydown(e) {
+                const menuItems = document.querySelectorAll('[role="menuitem"]');
+                const currentIndex = Array.from(menuItems).indexOf(document.activeElement);
+                
+                switch(e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        const nextIndex = (currentIndex + 1) % menuItems.length;
+                        menuItems[nextIndex]?.focus();
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        const prevIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1;
+                        menuItems[prevIndex]?.focus();
+                        break;
+                    case 'Escape':
+                        e.preventDefault();
+                        this.toggleExportMenu();
+                        break;
+                }
+            }
+        };
+
+        // ==================== COMPONENTS ====================
+        const Components = {
+            RateLimitBanner() {
+                if (!AppState.rateLimitBanner) return '';
+                
+                const isDark = AppState.theme === 'dark';
+                const countdown = AppState.rateLimitBanner.countdown;
+                
+                return `
+                    <div class="rate-limit-banner fixed top-0 left-0 right-0 ${isDark ? 'bg-yellow-600' : 'bg-yellow-500'} text-white px-4 py-3 flex justify-between items-center z-50 shadow-lg" role="alert" aria-live="assertive">
+                        <div class="flex items-center space-x-3">
+                            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                            <span class="font-medium">${AppState.rateLimitBanner.message} ${countdown > 0 ? `(${countdown}s)` : ''}</span>
+                        </div>
+                        <button 
+                            onclick="RateLimitManager.dismissBanner()" 
+                            class="font-bold hover:bg-white hover:bg-opacity-20 rounded px-2 py-1 transition-colors"
+                            aria-label="Dismiss rate limit warning"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                `;
+            },
+            
+            OfflineBanner() {
+                if (!AppState.isOffline) return '';
+                
+                const isDark = AppState.theme === 'dark';
+                
+                return `
+                    <div class="fixed top-0 left-0 right-0 ${isDark ? 'bg-red-600' : 'bg-red-500'} text-white px-4 py-2 text-center z-50 text-sm" role="alert" aria-live="assertive">
+                        <i data-lucide="wifi-off" class="w-4 h-4 inline mr-2"></i>
+                        You're offline. Some features may be unavailable.
+                    </div>
+                `;
+            },
+
+            LandingPage() {
+                const isDark = AppState.theme === 'dark';
+                const topOffset = AppState.rateLimitBanner || AppState.isOffline ? 'mt-14' : '';
+                
+                return `
+                    ${this.RateLimitBanner()}
+                    ${this.OfflineBanner()}
+                    <div class="${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'} ${topOffset}">
+                        <!-- Navigation -->
+                        <nav class="fixed top-0 w-full z-40 glass-effect ${isDark ? 'border-gray-800' : 'border-gray-200'} border-b ${topOffset}">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div class="flex justify-between items-center py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg" aria-hidden="true">
+                                            <i data-lucide="sparkles" class="w-6 h-6 text-white"></i>
+                                        </div>
+                                        <span class="text-xl font-bold">PromptPilot Pro</span>
+                                    </div>
+                                    <div class="flex items-center space-x-4">
+                                        <button 
+                                            onclick="window.scrollTo({top: document.getElementById('features').offsetTop - 80, behavior: 'smooth'})" 
+                                            class="text-sm font-medium hover:text-purple-500 transition-colors"
+                                            aria-label="Navigate to features section"
+                                        >
+                                            Features
+                                        </button>
+                                        <button 
+                                            onclick="window.scrollTo({top: document.getElementById('pricing').offsetTop - 80, behavior: 'smooth'})" 
+                                            class="text-sm font-medium hover:text-purple-500 transition-colors"
+                                            aria-label="Navigate to pricing section"
+                                        >
+                                            Pricing
+                                        </button>
+                                        <button 
+                                            onclick="Handlers.toggleTheme()" 
+                                            class="p-2 rounded-lg ${isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'} transition-colors"
+                                            aria-label="Toggle dark mode"
+                                        >
+                                            <i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-5 h-5"></i>
+                                        </button>
+                                        <button 
+                                            onclick="Handlers.navigateTo('app')" 
+                                            class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                                            aria-label="Launch application"
+                                        >
+                                            Launch App
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </nav>
+
+                        <!-- Hero Section -->
+                        <section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8" aria-labelledby="hero-heading">
+                            <div class="max-w-7xl mx-auto text-center">
+                                <div class="inline-flex items-center px-4 py-2 bg-purple-500 bg-opacity-10 rounded-full mb-6" role="banner">
+                                    <i data-lucide="zap" class="w-4 h-4 text-purple-500 mr-2" aria-hidden="true"></i>
+                                    <span class="text-sm font-medium text-purple-500">Powered by Claude Sonnet 4</span>
+                                </div>
+                                
+                                <h1 id="hero-heading" class="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight hero-title">
+                                    Transform Vague Prompts into
+                                    <span class="gradient-text block mt-2">Crystal-Clear Instructions</span>
+                                </h1>
+                                
+                                <p class="text-xl ${isDark ? 'text-gray-400' : 'text-gray-600'} max-w-3xl mx-auto mb-10">
+                                    Stop struggling with AI responses. PromptPilot Pro uses advanced AI to analyze and optimize your prompts, delivering 10x better results from Claude, GPT, and other AI models.
+                                </p>
+                                
+                                <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                                    <button 
+                                        onclick="Handlers.navigateTo('app')" 
+                                        class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold text-lg hover:shadow-2xl transition-all flex items-center"
+                                        aria-label="Start optimizing prompts for free"
+                                    >
+                                        <i data-lucide="sparkles" class="w-5 h-5 mr-2" aria-hidden="true"></i>
+                                        Start Optimizing Free
+                                    </button>
+                                    <button 
+                                        onclick="window.scrollTo({top: document.getElementById('demo').offsetTop - 80, behavior: 'smooth'})" 
+                                        class="px-8 py-4 ${isDark ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'} rounded-xl font-semibold text-lg transition-all flex items-center"
+                                        aria-label="Watch demonstration"
+                                    >
+                                        <i data-lucide="play-circle" class="w-5 h-5 mr-2" aria-hidden="true"></i>
+                                        Watch Demo
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-16 grid grid-cols-3 gap-8 max-w-3xl mx-auto">
+                                    <div>
+                                        <div class="text-4xl font-bold gradient-text" aria-label="10 times better results">10x</div>
+                                        <div class="text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mt-2">Better Results</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-4xl font-bold gradient-text" aria-label="2 second optimization time">2sec</div>
+                                        <div class="text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mt-2">Optimization Time</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-4xl font-bold gradient-text" aria-label="100 percent free to start">100%</div>
+                                        <div class="text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mt-2">Free to Start</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Features Section -->
+                        <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 ${isDark ? 'bg-gray-800' : 'bg-gray-50'}" aria-labelledby="features-heading">
+                            <div class="max-w-7xl mx-auto">
+                                <div class="text-center mb-16">
+                                    <h2 id="features-heading" class="text-4xl font-bold mb-4">Supercharge Your AI Workflow</h2>
+                                    <p class="${isDark ? 'text-gray-400' : 'text-gray-600'} text-lg max-w-2xl mx-auto">
+                                        Professional prompt engineering features designed for creators, developers, and businesses
+                                    </p>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                    ${this.FeatureCard('brain', 'AI-Powered Analysis', 'Advanced Claude Sonnet 4 model analyzes your prompts and suggests improvements based on proven engineering principles.', isDark)}
+                                    ${this.FeatureCard('target', 'Precision Optimization', 'Transform vague ideas into detailed, actionable prompts with clear structure, context, and expected outcomes.', isDark)}
+                                    ${this.FeatureCard('trending-up', 'Quality Scoring', 'Get instant feedback with detailed metrics on clarity, specificity, and structure (rated 0-10).', isDark)}
+                                    ${this.FeatureCard('history', 'Smart History', 'Track all optimizations with searchable history, version control, and easy export capabilities.', isDark)}
+                                    ${this.FeatureCard('bar-chart-3', 'Analytics Dashboard', 'Monitor your progress with comprehensive stats, success rates, and improvement trends over time.', isDark)}
+                                    ${this.FeatureCard('download', 'Export & Share', 'Export optimized prompts as JSON, Markdown, or TXT and integrate into your existing workflow.', isDark)}
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Demo Section -->
+                        <section id="demo" class="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="demo-heading">
+                            <div class="max-w-5xl mx-auto">
+                                <div class="text-center mb-12">
+                                    <h2 id="demo-heading" class="text-4xl font-bold mb-4">See the Transformation</h2>
+                                    <p class="${isDark ? 'text-gray-400' : 'text-gray-600'} text-lg">
+                                        Watch how PromptPilot Pro turns basic prompts into professional-grade instructions
+                                    </p>
+                                </div>
+                                
+                                <div class="grid md:grid-cols-2 gap-8">
+                                    <div class="${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-xl">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-3 h-3 rounded-full bg-red-500 mr-2" aria-hidden="true"></div>
+                                            <span class="text-sm font-medium ${isDark ? 'text-gray-400' : 'text-gray-600'}">Before</span>
+                                        </div>
+                                        <div class="${isDark ? 'bg-gray-900' : 'bg-gray-50'} rounded-lg p-4">
+                                            <p class="text-sm opacity-70 italic">"Write something good about AI"</p>
+                                        </div>
+                                        <div class="mt-4 flex items-center text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}">
+                                            <i data-lucide="alert-triangle" class="w-4 h-4 mr-2" aria-hidden="true"></i>
+                                            Too vague, no context, unclear expectations
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-xl border-2 border-purple-500">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-3 h-3 rounded-full bg-green-500 mr-2" aria-hidden="true"></div>
+                                            <span class="text-sm font-medium text-green-500">After Optimization</span>
+                                        </div>
+                                        <div class="${isDark ? 'bg-gray-900' : 'bg-gray-50'} rounded-lg p-4">
+                                            <p class="text-sm">"As a technology analyst, write a comprehensive 500-word article about the impact of AI on modern business productivity. Include: 1) Three specific use cases with metrics, 2) Expert perspectives..."</p>
+                                        </div>
+                                        <div class="mt-4 flex items-center justify-between">
+                                            <div class="flex items-center text-sm text-green-500">
+                                                <i data-lucide="check-circle" class="w-4 h-4 mr-2" aria-hidden="true"></i>
+                                                Clear, specific, actionable
+                                            </div>
+                                            <div class="text-2xl font-bold text-green-500" aria-label="Quality score 9.5 out of 10">9.5/10</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-12">
+                                    <button 
+                                        onclick="Handlers.navigateTo('app')" 
+                                        class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold text-lg hover:shadow-2xl transition-all inline-flex items-center"
+                                        aria-label="Try prompt optimization yourself"
+                                    >
+                                        Try It Yourself
+                                        <i data-lucide="arrow-right" class="w-5 h-5 ml-2" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Testimonials -->
+                        <section class="py-20 px-4 sm:px-6 lg:px-8 ${isDark ? 'bg-gray-800' : 'bg-gray-50'}" aria-labelledby="testimonials-heading">
+                            <div class="max-w-7xl mx-auto">
+                                <h2 id="testimonials-heading" class="text-4xl font-bold text-center mb-12">Loved by Professionals</h2>
+                                <div class="grid md:grid-cols-3 gap-8">
+                                    ${this.TestimonialCard('Sarah Chen', 'AI Product Manager', 'PromptPilot Pro has transformed how our team works with AI. We get better results in half the time.', isDark)}
+                                    ${this.TestimonialCard('Marcus Rodriguez', 'Content Creator', 'The quality scores and analytics help me consistently improve my prompts. Game-changer for content creation!', isDark)}
+                                    ${this.TestimonialCard('Emily Watson', 'Technical Writer', 'Finally, a tool that makes prompt engineering accessible. The optimization suggestions are incredibly valuable.', isDark)}
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Pricing -->
+                        <section id="pricing" class="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="pricing-heading">
+                            <div class="max-w-7xl mx-auto">
+                                <div class="text-center mb-16">
+                                    <h2 id="pricing-heading" class="text-4xl font-bold mb-4">Simple, Transparent Pricing</h2>
+                                    <p class="${isDark ? 'text-gray-400' : 'text-gray-600'} text-lg">
+                                        Start free, upgrade when you need more
+                                    </p>
+                                </div>
+                                
+                                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                                    <div class="${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-xl">
+                                        <h3 class="text-2xl font-bold mb-2">Free</h3>
+                                        <div class="mb-6">
+                                            <span class="text-4xl font-bold">$0</span>
+                                            <span class="${isDark ? 'text-gray-400' : 'text-gray-600'}">/month</span>
+                                        </div>
+                                        <ul class="space-y-3 mb-8">
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-green-500 mr-3" aria-hidden="true"></i>
+                                                10 optimizations per day
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-green-500 mr-3" aria-hidden="true"></i>
+                                                Basic quality scoring
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-green-500 mr-3" aria-hidden="true"></i>
+                                                7-day history
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-green-500 mr-3" aria-hidden="true"></i>
+                                                Export to JSON, MD, TXT
+                                            </li>
+                                        </ul>
+                                        <button 
+                                            onclick="Handlers.navigateTo('app')" 
+                                            class="w-full py-3 ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} rounded-lg font-semibold transition-all"
+                                            aria-label="Get started with free plan"
+                                        >
+                                            Get Started
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="${isDark ? 'bg-gray-800' : 'bg-white'} rounded-2xl p-8 shadow-xl border-2 border-purple-500 relative">
+                                        <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+                                            Coming Soon
+                                        </div>
+                                        <h3 class="text-2xl font-bold mb-2">Pro</h3>
+                                        <div class="mb-6">
+                                            <span class="text-4xl font-bold">$19</span>
+                                            <span class="${isDark ? 'text-gray-400' : 'text-gray-600'}">/month</span>
+                                        </div>
+                                        <ul class="space-y-3 mb-8">
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-purple-500 mr-3" aria-hidden="true"></i>
+                                                Unlimited optimizations
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-purple-500 mr-3" aria-hidden="true"></i>
+                                                Advanced AI analysis
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-purple-500 mr-3" aria-hidden="true"></i>
+                                                Unlimited history
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-purple-500 mr-3" aria-hidden="true"></i>
+                                                Team collaboration
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-purple-500 mr-3" aria-hidden="true"></i>
+                                                API access
+                                            </li>
+                                            <li class="flex items-center">
+                                                <i data-lucide="check" class="w-5 h-5 text-purple-500 mr-3" aria-hidden="true"></i>
+                                                Priority support
+                                            </li>
+                                        </ul>
+                                        <button 
+                                            class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all"
+                                            aria-label="Join waitlist for Pro plan"
+                                        >
+                                            Join Waitlist
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- CTA -->
+                        <section class="py-20 px-4 sm:px-6 lg:px-8">
+                            <div class="max-w-4xl mx-auto text-center">
+                                <div class="bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl p-12 shadow-2xl">
+                                    <h2 class="text-4xl font-bold text-white mb-4">Ready to Transform Your Prompts?</h2>
+                                    <p class="text-xl text-purple-100 mb-8">
+                                        Join thousands of professionals getting 10x better AI results
+                                    </p>
+                                    <button 
+                                        onclick="Handlers.navigateTo('app')" 
+                                        class="px-8 py-4 bg-white text-purple-600 rounded-xl font-semibold text-lg hover:shadow-2xl transition-all inline-flex items-center"
+                                        aria-label="Start optimizing prompts for free"
+                                    >
+                                        <i data-lucide="sparkles" class="w-5 h-5 mr-2" aria-hidden="true"></i>
+                                        Start Optimizing Free
+                                    </button>
+                                    <p class="text-purple-100 text-sm mt-4">No credit card required • Start in 30 seconds</p>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Footer -->
+                        <footer class="${isDark ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} border-t py-12 px-4 sm:px-6 lg:px-8" role="contentinfo">
+                            <div class="max-w-7xl mx-auto">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+                                    <div>
+                                        <h4 class="font-semibold mb-4">Product</h4>
+                                        <ul class="space-y-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}">
+                                            <li><a href="#features" class="hover:text-purple-500">Features</a></li>
+                                            <li><a href="#pricing" class="hover:text-purple-500">Pricing</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">Roadmap</a></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-4">Resources</h4>
+                                        <ul class="space-y-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}">
+                                            <li><a href="#" class="hover:text-purple-500">Documentation</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">API Reference</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">Blog</a></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-4">Company</h4>
+                                        <ul class="space-y-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}">
+                                            <li><a href="#" class="hover:text-purple-500">About</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">Contact</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">Careers</a></li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-semibold mb-4">Legal</h4>
+                                        <ul class="space-y-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}">
+                                            <li><a href="#" class="hover:text-purple-500">Privacy</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">Terms</a></li>
+                                            <li><a href="#" class="hover:text-purple-500">Security</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="border-t ${isDark ? 'border-gray-800' : 'border-gray-200'} pt-8 flex flex-col md:flex-row justify-between items-center">
+                                    <p class="text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'} mb-4 md:mb-0">
+                                        © 2025 PromptPilot Pro. All rights reserved.
+                                    </p>
+                                    <div class="flex items-center space-x-6">
+                                        <a href="#" class="${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors" aria-label="Twitter">
+                                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                                        </a>
+                                        <a href="#" class="${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors" aria-label="GitHub">
+                                            <i data-lucide="github" class="w-5 h-5"></i>
+                                        </a>
+                                        <a href="#" class="${isDark ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'} transition-colors" aria-label="LinkedIn">
+                                            <i data-lucide="linkedin" class="w-5 h-5"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                `;
+            },
+
+            FeatureCard(icon, title, description, isDark) {
+                return `
+                    <article class="${isDark ? 'bg-gray-900' : 'bg-white'} rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 w-12 h-12 rounded-lg flex items-center justify-center mb-4" aria-hidden="true">
+                            <i data-lucide="${icon}" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">${title}</h3>
+                        <p class="${isDark ? 'text-gray-400' : 'text-gray-600'}">${description}</p>
+                    </article>
+                `;
+            },
+
+            TestimonialCard(name, title, quote, isDark) {
+                return `
+                    <article class="${isDark ? 'bg-gray-900' : 'bg-white'} rounded-xl p-6 shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-xl" aria-hidden="true">
+                                ${name.charAt(0)}
+                            </div>
+                            <div class="ml-4">
+                                <div class="font-semibold">${name}</div>
+                                <div class="text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}">${title}</div>
+                            </div>
+                        </div>
+                        <blockquote class="${isDark ? 'text-gray-300' : 'text-gray-700'} italic">"${quote}"</blockquote>
+                        <div class="flex mt-4" role="img" aria-label="5 star rating">
+                            ${[1,2,3,4,5].map(() => '<i data-lucide="star" class="w-4 h-4 text-yellow-500 fill-current"></i>').join('')}
+                        </div>
+                    </article>
+                `;
+            },
+
+            AppPage() {
+                const isDark = AppState.theme === 'dark';
+                const bgClass = isDark ? 'bg-gray-900' : 'bg-gray-50';
+                const cardBg = isDark ? 'bg-gray-800' : 'bg-white';
+                const textClass = isDark ? 'text-gray-100' : 'text-gray-900';
+                const textSecondary = isDark ? 'text-gray-400' : 'text-gray-600';
+                const topOffset = AppState.rateLimitBanner || AppState.isOffline ? 'pt-14' : '';
+
+                return `
+                    ${this.RateLimitBanner()}
+                    ${this.OfflineBanner()}
+                    <div class="min-h-screen ${bgClass} ${textClass} ${topOffset}">
+                        <!-- Header -->
+                        <header class="${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b sticky top-0 z-40 backdrop-blur-sm bg-opacity-90" role="banner">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div class="flex justify-between items-center py-4">
+                                    <div class="flex items-center space-x-3">
+                                        <button 
+                                            onclick="Handlers.navigateTo('landing')" 
+                                            class="mr-4 p-2 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors"
+                                            aria-label="Return to landing page"
+                                        >
+                                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                                        </button>
+                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-2 rounded-lg" aria-hidden="true">
+                                            <i data-lucide="sparkles" class="w-6 h-6 text-white"></i>
+                                        </div>
+                                        <div>
+                                            <h1 class="text-2xl font-bold">PromptPilot Pro</h1>
+                                            <p class="text-xs ${textSecondary}">AI-Powered Prompt Optimization</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-center space-x-2">
+                                        <button 
+                                            onclick="Handlers.toggleTheme()" 
+                                            class="p-2 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors"
+                                            aria-label="Toggle theme. Current theme: ${AppState.theme}"
+                                        >
+                                            <i data-lucide="${isDark ? 'sun' : 'moon'}" class="w-5 h-5"></i>
+                                        </button>
+                                        <div class="px-3 py-1 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-100'} text-sm flex items-center space-x-2">
+                                            <i data-lucide="user" class="w-4 h-4" aria-hidden="true"></i>
+                                            <span>${sanitizeHTML(AppState.user?.name || 'Guest')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- Navigation -->
+                        <nav class="${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b" role="navigation" aria-label="Main navigation">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                                <div class="flex space-x-4 py-3">
+                                    ${this.NavButton('optimize', 'sparkles', 'Optimize', isDark)}
+                                    ${this.NavButton('history', 'history', 'History', isDark)}
+                                    ${this.NavButton('analytics', 'bar-chart-3', 'Analytics', isDark)}
+                                </div>
+                            </div>
+                        </nav>
+
+                        <!-- Keyboard Shortcuts Hint -->
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                            <div class="${isDark ? 'bg-gray-800' : 'bg-blue-50'} rounded-lg p-3 text-sm ${isDark ? 'text-gray-400' : 'text-blue-800'} flex items-center">
+                                <i data-lucide="keyboard" class="w-4 h-4 mr-2" aria-hidden="true"></i>
+                                <span><kbd class="px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-white'}">Ctrl</kbd> + <kbd class="px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-white'}">Enter</kbd> to optimize • <kbd class="px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-white'}">Ctrl</kbd> + <kbd class="px-2 py-1 rounded ${isDark ? 'bg-gray-700' : 'bg-white'}">K</kbd> to focus input</span>
+                            </div>
+                        </div>
+
+                        <!-- Main Content -->
+                        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                            ${AppState.currentView === 'optimize' ? this.OptimizeView(isDark, cardBg, textSecondary) : ''}
+                            ${AppState.currentView === 'history' ? this.HistoryView(isDark, cardBg, textSecondary) : ''}
+                            ${AppState.currentView === 'analytics' ? this.AnalyticsView(isDark, cardBg, textSecondary) : ''}
+                        </main>
+
+                        <!-- Footer -->
+                        <footer class="${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-t mt-12" role="contentinfo">
+                            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-sm ${textSecondary}">© 2025 PromptPilot Pro - AI-Powered Prompt Engineering</p>
+                                    <p class="text-sm ${textSecondary}">Powered by Claude Sonnet 4</p>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                `;
+            },
+
+            NavButton(view, icon, label, isDark) {
+                const isActive = AppState.currentView === view;
+                return `
+                    <button 
+                        onclick="AppState.setState({currentView: '${view}'})" 
+                        class="px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 ${
+                            isActive
+                                ? 'bg-purple-600 text-white'
+                                : `${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`
+                        }"
+                        aria-label="${label}"
+                        aria-current="${isActive ? 'page' : 'false'}"
+                    >
+                        <i data-lucide="${icon}" class="w-4 h-4" aria-hidden="true"></i>
+                        <span>${label}</span>
+                    </button>
+                `;
+            },
+
+            LoadingSkeleton(isDark) {
+                return `
+                    <div class="space-y-4 animate-pulse" role="status" aria-label="Loading">
+                        <div class="skeleton h-4 ${isDark ? 'bg-gray-700' : 'bg-gray-300'} rounded w-3/4"></div>
+                        <div class="skeleton h-4 ${isDark ? 'bg-gray-700' : 'bg-gray-300'} rounded w-1/2"></div>
+                        <div class="skeleton h-4 ${isDark ? 'bg-gray-700' : 'bg-gray-300'} rounded w-5/6"></div>
+                    </div>
+                `;
+            },
+
+            OptimizeView(isDark, cardBg, textSecondary) {
+                return `
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 fade-in">
+                        <!-- Input Section -->
+                        <section class="${cardBg} rounded-xl shadow-lg p-6" aria-labelledby="input-heading">
+                            <h2 id="input-heading" class="text-xl font-bold mb-4">Original Prompt</h2>
+                            <label for="promptInput" class="sr-only">Enter your prompt to optimize</label>
+                            <textarea 
+                                id="promptInput" 
+                                placeholder="Enter your vague prompt here... e.g., 'Write something good' or 'Help me with stuff'" 
+                                class="w-full h-48 p-4 rounded-lg border ${
+                                    isDark 
+                                        ? 'bg-gray-900 border-gray-700 focus:border-purple-500' 
+                                        : 'bg-gray-50 border-gray-300 focus:border-purple-500'
+                                } focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 resize-none"
+                                aria-describedby="input-help"
+                            >${sanitizeHTML(AppState.input)}</textarea>
+                            <p id="input-help" class="sr-only">Type or paste your prompt that you want to optimize for better AI responses</p>
+                            
+                            <button 
+                                onclick="Handlers.optimizePrompt()" 
+                                ${AppState.loading || !AppState.input.trim() ? 'disabled' : ''} 
+                                class="mt-4 w-full py-3 px-4 rounded-lg font-semibold flex items-center justify-center space-x-2 transition-all ${
+                                    AppState.loading || !AppState.input.trim()
+                                        ? 'bg-gray-600 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl'
+                                } text-white"
+                                aria-label="${AppState.loading ? 'Optimizing prompt in progress' : 'Optimize your prompt'}"
+                                aria-busy="${AppState.loading}"
+                            >
+                                ${AppState.loading ? `
+                                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white" role="status" aria-hidden="true"></div>
+                                    <span>Optimizing...</span>
+                                ` : `
+                                    <i data-lucide="sparkles" class="w-5 h-5" aria-hidden="true"></i>
+                                    <span>Optimize Prompt</span>
+                                `}
+                            </button>
+
+                            ${AppState.error ? `
+                                <div class="mt-4 p-4 bg-red-500 bg-opacity-10 border border-red-500 rounded-lg text-red-500" role="alert">
+                                    <i data-lucide="alert-circle" class="w-5 h-5 inline mr-2" aria-hidden="true"></i>
+                                    ${sanitizeHTML(AppState.error)}
+                                </div>
+                            ` : ''}
+                        </section>
+
+                        <!-- Output Section -->
+                        <section class="${cardBg} rounded-xl shadow-lg p-6" aria-labelledby="output-heading">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 id="output-heading" class="text-xl font-bold">Optimized Prompt</h2>
+                                ${AppState.result ? `
+                                    <div class="flex space-x-2 relative">
+                                        <button 
+                                            onclick="Handlers.copyToClipboard()" 
+                                            class="p-2 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors" 
+                                            title="Copy to clipboard"
+                                            aria-label="Copy optimized prompt to clipboard"
+                                        >
+                                            <i data-lucide="${AppState.copied ? 'check' : 'copy'}" class="w-5 h-5 ${AppState.copied ? 'text-green-500' : ''}" aria-hidden="true"></i>
+                                        </button>
+                                        <div class="relative">
+                                            <button 
+                                                onclick="Handlers.toggleExportMenu()" 
+                                                class="p-2 rounded-lg ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} transition-colors" 
+                                                title="Export options"
+                                                aria-label="Open export menu"
+                                                aria-expanded="${AppState.showExportMenu}"
+                                                aria-haspopup="true"
+                                            >
+                                                <i data-lucide="download" class="w-5 h-5" aria-hidden="true"></i>
+                                            </button>
+                                            ${AppState.showExportMenu ? `
+                                                <div 
+                                                    class="absolute right-0 mt-2 w-48 ${isDark ? 'bg-gray-700' : 'bg-white'} rounded-lg shadow-xl border ${isDark ? 'border-gray-600' : 'border-gray-200'} z-50"
+                                                    role="menu"
+                                                    aria-orientation="vertical"
+                                                    aria-labelledby="export-menu"
+                                                >
+                                                    <button 
+                                                        onclick="Handlers.exportAsJSON(); Handlers.toggleExportMenu();" 
+                                                        class="w-full text-left px-4 py-2 ${isDark ? 'hover:bg-gray-600' : 'hover:bg-gray-100'} rounded-t-lg flex items-center space-x-2"
+                                                        role="menuitem"
+                                                        tabindex="0"
+                                                    >
+                                                        <i data-lucide="file-json" class="w-4 h-4" aria-hidden="true"></i>
+                                                        <span class="text-sm">Export as JSON</span>
+                                                    </button>
+                                                    <button 
+                                                        onclick="Handlers.exportAsMarkdown(); Handlers.toggleExportMenu();" 
+                                                        class="w-full text-left px-4 py-2 ${isDark ? 'hover:bg-gray-600' : 'hover:bg-gray-100'} flex items-center space-x-2"
+                                                        role="menuitem"
+                                                        tabindex="0"
+                                                    >
+                                                        <i data-lucide="file-text" class="w-4 h-4" aria-hidden="true"></i>
+                                                        <span class="text-sm">Export as Markdown</span>
+                                                    </button>
+                                                    <button 
+                                                        onclick="Handlers.exportAsText(); Handlers.toggleExportMenu();" 
+                                                        class="w-full text-left px-4 py-2 ${isDark ? 'hover:bg-gray-600' : 'hover:bg-gray-100'} rounded-b-lg flex items-center space-x-2"
+                                                        role="menuitem"
+                                                        tabindex="0"
+                                                    >
+                                                        <i data-lucide="file" class="w-4 h-4" aria-hidden="true"></i>
+                                                        <span class="text-sm">Export as TXT</span>
+                                                    </button>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+
+                            ${AppState.loading ? this.LoadingSkeleton(isDark) : ''}
+                            
+                            ${AppState.result && !AppState.loading ? `
+                                <div class="space-y-4 fade-in">
+                                    <div id="optimizedResult" class="${isDark ? 'bg-gray-900' : 'bg-gray-50'} p-4 rounded-lg max-h-48 overflow-y-auto" tabindex="0" aria-label="Optimized prompt result">
+                                        <p class="text-sm leading-relaxed whitespace-pre-wrap">${sanitizeHTML(AppState.result.optimized)}</p>
+                                    </div>
+
+                                    <!-- Quality Score -->
+                                    <div class="${isDark ? 'bg-gray-900' : 'bg-gray-50'} p-4 rounded-lg" role="region" aria-labelledby="quality-score-heading">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <span id="quality-score-heading" class="font-semibold">Overall Score</span>
+                                            <span class="text-2xl font-bold ${
+                                                AppState.result.score >= 8 ? 'text-green-500' : AppState.result.score >= 6 ? 'text-yellow-500' : 'text-orange-500'
+                                            }" aria-label="Overall quality score ${AppState.result.score} out of 10">${AppState.result.score}/10</span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            ${['clarity', 'specificity', 'structure'].map(metric => `
+                                                <div>
+                                                    <div class="flex justify-between text-sm mb-1">
+                                                        <span class="capitalize">${metric}</span>
+                                                        <span aria-label="${metric} score ${AppState.result.details[metric]} out of 10">${AppState.result.details[metric]}/10</span>
+                                                    </div>
+                                                    <div class="${isDark ? 'bg-gray-700' : 'bg-gray-200'} h-2 rounded-full" role="progressbar" aria-valuenow="${AppState.result.details[metric]}" aria-valuemin="0" aria-valuemax="10">
+                                                        <div class="h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500" style="width: ${AppState.result.details[metric] * 10}%"></div>
+                                                    </div>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+
+                                    <!-- Improvements -->
+                                    ${AppState.result.details.improvements && AppState.result.details.improvements.length > 0 ? `
+                                        <div class="${isDark ? 'bg-gray-900' : 'bg-gray-50'} p-4 rounded-lg" aria-labelledby="improvements-heading">
+                                            <h3 id="improvements-heading" class="font-semibold mb-2">Key Improvements:</h3>
+                                            <ul class="space-y-1">
+                                                ${AppState.result.details.improvements.map(imp => `
+                                                    <li class="text-sm ${textSecondary} flex items-start space-x-2">
+                                                        <span class="text-purple-500 mt-1" aria-hidden="true">•</span>
+                                                        <span>${sanitizeHTML(imp)}</span>
+                                                    </li>
+                                                `).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            ` : !AppState.loading ? `
+                                <div class="h-48 flex items-center justify-center">
+                                    <p class="${textSecondary}" role="status">Your optimized prompt will appear here...</p>
+                                </div>
+                            ` : ''}
+                        </section>
+                    </div>
+                `;
+            },
+
+            HistoryView(isDark, cardBg, textSecondary) {
+                return `
+                    <section class="${cardBg} rounded-xl shadow-lg p-6 fade-in" aria-labelledby="history-heading">
+                        <h2 id="history-heading" class="text-xl font-bold mb-6">Optimization History</h2>
+                        ${AppState.history.length === 0 ? `
+                            <div class="text-center py-12" role="status">
+                                <i data-lucide="history" class="w-16 h-16 mx-auto mb-4 ${textSecondary}" aria-hidden="true"></i>
+                                <p class="${textSecondary}">No history yet. Start optimizing prompts!</p>
+                            </div>
+                        ` : `
+                            <div class="space-y-4">
+                                ${AppState.history.map(item => `
+                                    <article class="p-4 rounded-lg border ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'} transition-colors">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div class="flex-1">
+                                                <p class="text-sm ${textSecondary} mb-1">Original:</p>
+                                                <p class="text-sm font-medium mb-3">${sanitizeHTML(item.original.substring(0, 100))}${item.original.length > 100 ? '...' : ''}</p>
+                                                <p class="text-sm ${textSecondary} mb-1">Optimized:</p>
+                                                <p class="text-sm">${sanitizeHTML(item.optimized.substring(0, 150))}...</p>
+                                            </div>
+                                            <div class="flex items-center space-x-3 ml-4">
+                                                <span class="font-bold ${
+                                                    item.score >= 8 ? 'text-green-500' : item.score >= 6 ? 'text-yellow-500' : 'text-orange-500'
+                                                }" aria-label="Quality score ${item.score} out of 10">${item.score}/10</span>
+                                                <button 
+                                                    onclick="Handlers.deleteHistoryItem(${item.id})" 
+                                                    class="p-1 rounded ${isDark ? 'hover:bg-gray-600' : 'hover:bg-gray-200'} transition-colors"
+                                                    aria-label="Delete this prompt from history"
+                                                >
+                                                    <i data-lucide="trash-2" class="w-4 h-4 text-red-500" aria-hidden="true"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs ${textSecondary}">
+                                            <time datetime="${item.timestamp}">${formatRelativeTime(item.timestamp)}</time>
+                                        </p>
+                                    </article>
+                                `).join('')}
+                            </div>
+                        `}
+                    </section>
+                `;
+            },
+
+            AnalyticsView(isDark, cardBg, textSecondary) {
+                const successRate = AppState.stats.total > 0 
+                    ? Math.round((AppState.history.filter(h => h.score >= 7).length / AppState.stats.total) * 100) 
+                    : 0;
+
+                return `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 fade-in">
+                        <article class="${cardBg} rounded-xl shadow-lg p-6" aria-labelledby="total-stats">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p id="total-stats" class="text-sm ${textSecondary} mb-1">Total Optimizations</p>
+                                    <p class="text-3xl font-bold" aria-label="${AppState.stats.total} total optimizations">${AppState.stats.total}</p>
+                                </div>
+                                <i data-lucide="trending-up" class="w-12 h-12 text-purple-500" aria-hidden="true"></i>
+                            </div>
+                        </article>
+                        
+                        <article class="${cardBg} rounded-xl shadow-lg p-6" aria-labelledby="average-stats">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p id="average-stats" class="text-sm ${textSecondary} mb-1">Average Score</p>
+                                    <p class="text-3xl font-bold ${
+                                        AppState.stats.avgScore >= 8 ? 'text-green-500' : AppState.stats.avgScore >= 6 ? 'text-yellow-500' : 'text-orange-500'
+                                    }" aria-label="Average score ${AppState.stats.avgScore} out of 10">${AppState.stats.avgScore}/10</p>
+                                </div>
+                                <i data-lucide="bar-chart-3" class="w-12 h-12 text-pink-500" aria-hidden="true"></i>
+                            </div>
+                        </article>
+                        
+                        <article class="${cardBg} rounded-xl shadow-lg p-6" aria-labelledby="success-stats">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p id="success-stats" class="text-sm ${textSecondary} mb-1">Success Rate</p>
+                                    <p class="text-3xl font-bold text-green-500" aria-label="Success rate ${successRate} percent">${successRate}%</p>
+                                </div>
+                                <i data-lucide="sparkles" class="w-12 h-12 text-green-500" aria-hidden="true"></i>
+                            </div>
+                        </article>
+                    </div>
+                `;
+            }
+        };
+
+        // ==================== RENDER FUNCTION ====================
+        function render() {
+            const app = document.getElementById('app');
+            
+            if (AppState.currentView === 'landing') {
+                app.innerHTML = Components.LandingPage();
+            } else {
+                app.innerHTML = Components.AppPage();
+            }
+            
+            // Reinitialize Lucide icons
+            setTimeout(() => lucide.createIcons(), 0);
+            
+            // Attach input listener
+            const inputEl = document.getElementById('promptInput');
+            if (inputEl) {
+                inputEl.addEventListener('input', (e) => {
+                    AppState.input = e.target.value;
+                });
+            }
+        }
+
+        // ==================== INITIALIZE APP ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            Handlers.initialize();
+            render();
+        });
+
+        // Make handlers globally available
+        window.Handlers = Handlers;
+        window.AppState = AppState;
+        window.RateLimitManager = RateLimitManager;
+    </script>
+</body>
+</html>
