@@ -11,7 +11,7 @@
 
 ## 🚀 Live Demo
 
-- **Frontend (GitHub Pages)**: [https://yourusername.github.io/promptpilot-pro/](https://yourusername.github.io/promptpilot-pro/)
+- **Frontend (GitHub Pages)**: [https://oathanrex.github.io/promptpilot-pro/](https://oathanrex.github.io/promptpilot-pro/)
 - **Backend API (Railway)**: [https://promptpilot.up.railway.app](https://promptpilot.up.railway.app)
 
 ---
@@ -101,7 +101,7 @@ promptpilot-pro/
 
 1. **Fork/Clone this repository:**
 ```bash
-git clone https://github.com/yourusername/promptpilot-pro.git
+git clone https://github.com/oathanrex/promptpilot-pro.git
 cd promptpilot-pro
 ```
 
@@ -113,7 +113,7 @@ cd promptpilot-pro
 
 3. **Your site will be live at:**
 ```
-https://yourusername.github.io/promptpilot-pro/
+https://oathanrex.github.io/promptpilot-pro/
 ```
 
 #### Option 2: GitHub Actions (Auto-deploy on push)
@@ -181,7 +181,7 @@ const BACKEND_URL = 'https://your-project.up.railway.app';
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/promptpilot-pro.git
+git clone https://github.com/oathanrex/promptpilot-pro.git
 cd promptpilot-pro
 ```
 
@@ -411,8 +411,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/promptpilot-pro/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/promptpilot-pro/discussions)
+- **Issues**: [GitHub Issues](https://github.com/oathanrex/promptpilot-pro/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/oathanrex/promptpilot-pro/discussions)
 - **Email**: support@promptpilot.pro
 
 ---
