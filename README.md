@@ -436,6 +436,6 @@ If this project helped you, please consider giving it a ⭐ on GitHub!
 
 ---
 
-**Made with ❤️ by [Your Name](https://github.com/yourusername)**
+**Made with ❤️ by [Oathan Rex](https://github.com/oathanrex)**
 
-**Powered by Claude Sonnet 4 🤖**
+
